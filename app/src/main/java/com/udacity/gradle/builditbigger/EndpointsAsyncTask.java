@@ -18,6 +18,7 @@ import static com.bilal.jokedisplay.JokeActivity.JOKE;
 class EndpointsAsyncTask extends AsyncTask<Context, Void, String> {
     private static MyApi myApiService = null;
     private Context context;
+    private GetJokeTaskListener listener;
 
     @Override
     protected String doInBackground(Context... params) {
@@ -30,7 +31,7 @@ class EndpointsAsyncTask extends AsyncTask<Context, Void, String> {
                     .setRootUrl("http://10.0.2.2:8080/_ah/api/")
                     .setGoogleClientRequestInitializer(new GoogleClientRequestInitializer() {
                         @Override
-                        public void initialize(AbstractGoogleClientRequest<?> abstractGoogleClientRequest) throws IOException {
+                        public void initialize(AbstractGoogleClientRequest<?> abstractGoogleClientRequest) {
                             abstractGoogleClientRequest.setDisableGZipContent(true);
                         }
                     });
@@ -40,19 +41,33 @@ class EndpointsAsyncTask extends AsyncTask<Context, Void, String> {
         }
 
         context = params[0];
-
+        String result = "";
         try {
-            return myApiService.getJoke().execute().getData();
+            result = myApiService.getJoke().execute().getData();
+            if (listener != null)
+                listener.onComplete(result, null);
+            return result;
         } catch (IOException e) {
-            e.printStackTrace();
-            return "";
+            if (listener != null)
+                listener.onComplete(result, e);
+            return result;
         }
+    }
+
+    public void setListener(GetJokeTaskListener listener) {
+        this.listener = listener;
     }
 
     @Override
     protected void onPostExecute(String result) {
-        Intent intent = new Intent(context, JokeActivity.class);
-        intent.putExtra(JOKE, result);
-        context.startActivity(intent);
+        if (!result.contentEquals("")) {
+            Intent intent = new Intent(context, JokeActivity.class);
+            intent.putExtra(JOKE, result);
+            context.startActivity(intent);
+        }
+    }
+
+    public interface GetJokeTaskListener {
+        void onComplete(String joke, Exception e);
     }
 }
