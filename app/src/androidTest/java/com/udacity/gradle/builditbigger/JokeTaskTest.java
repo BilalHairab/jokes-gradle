@@ -3,7 +3,9 @@ package com.udacity.gradle.builditbigger;
 import android.content.Context;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
+import android.support.v4.util.Pair;
 import android.text.TextUtils;
+import android.widget.ProgressBar;
 
 import org.junit.After;
 import org.junit.Before;
@@ -24,6 +26,7 @@ public class JokeTaskTest {
     private CountDownLatch signal;
     private Exception exception;
     private String result;
+
     @Before
     public void init() {
         context = mActivityTestRule.getActivity();
@@ -31,7 +34,7 @@ public class JokeTaskTest {
     }
 
     @After
-    public void finish(){
+    public void finish() {
         signal.countDown();
     }
 
@@ -46,7 +49,7 @@ public class JokeTaskTest {
                 signal.countDown();
             }
         });
-        task.execute(context);
+        task.execute(new Pair<Context, ProgressBar>(context, null));
         signal.await();
         assertNull(exception);
         assertFalse(TextUtils.isEmpty(result));

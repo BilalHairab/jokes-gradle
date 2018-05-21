@@ -2,7 +2,6 @@ package com.udacity.gradle.builditbigger.free;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,7 +31,7 @@ public class MainActivityFragment extends Fragment {
                 .addTestDevice(AdRequest.DEVICE_ID_EMULATOR)
                 .build();
         mInterstitialAd = new InterstitialAd(getActivity());
-        mInterstitialAd.setAdUnitId("ca-app-pub-3940256099942544/1033173712");
+        mInterstitialAd.setAdUnitId(getContext().getString(R.string.inter_ad_unit_id));
         mInterstitialAd.loadAd(new AdRequest.Builder().build());
         mAdView.loadAd(adRequest);
 
