@@ -2,16 +2,19 @@ package com.udacity.gradle.builditbigger.free;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.InterstitialAd;
 import com.udacity.gradle.builditbigger.R;
 
 
-public class MainActivityFragment extends Fragment{
+public class MainActivityFragment extends Fragment {
+    private InterstitialAd mInterstitialAd;
 
     public MainActivityFragment() {
     }
@@ -28,8 +31,21 @@ public class MainActivityFragment extends Fragment{
         AdRequest adRequest = new AdRequest.Builder()
                 .addTestDevice(AdRequest.DEVICE_ID_EMULATOR)
                 .build();
+        mInterstitialAd = new InterstitialAd(getActivity());
+        mInterstitialAd.setAdUnitId("ca-app-pub-3940256099942544/1033173712");
+        mInterstitialAd.loadAd(new AdRequest.Builder().build());
         mAdView.loadAd(adRequest);
+
         return root;
     }
 
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (!mInterstitialAd.isLoaded()) {
+            mInterstitialAd.loadAd(new AdRequest.Builder().build());
+        }
+        mInterstitialAd.show();
+
+    }
 }
